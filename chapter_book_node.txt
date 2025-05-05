@@ -1,0 +1,71 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    string name;
+    Node* firstChild;
+    Node* nextSibling;
+};
+
+// Create new node
+Node* createNode(string name) {
+    Node* node = new Node;
+    node->name = name;
+    node->firstChild = nullptr;
+    node->nextSibling = nullptr;
+    return node;
+}
+
+// Add child to a node
+void addChild(Node* parent, Node* child) {
+    if (parent->firstChild == nullptr) {
+        parent->firstChild = child;
+    } else {
+        Node* temp = parent->firstChild;
+        while (temp->nextSibling != nullptr) {
+            temp = temp->nextSibling;
+        }
+        temp->nextSibling = child;
+    }
+}
+
+// Print tree (DFS)
+void printTree(Node* root, int depth = 0) {
+    if (root == nullptr) return;
+
+    for (int i = 0; i < depth; i++) cout << "  ";
+    cout << "- " << root->name << endl;
+
+    printTree(root->firstChild, depth + 1);
+    printTree(root->nextSibling, depth);
+}
+
+int main() {
+    // Root node
+    Node* book = createNode("Book");
+
+    // Chapters
+    Node* ch1 = createNode("Chapter 1");
+    Node* ch2 = createNode("Chapter 2");
+    addChild(book, ch1);
+    addChild(book, ch2);
+
+    // Sections in Chapter 1
+    Node* sec11 = createNode("Section 1.1");
+    Node* sec12 = createNode("Section 1.2");
+    addChild(ch1, sec11);
+    addChild(ch1, sec12);
+
+    // Subsection in Section 1.1
+    Node* subsec111 = createNode("Subsection 1.1.1");
+    addChild(sec11, subsec111);
+
+    // Section in Chapter 2
+    Node* sec21 = createNode("Section 2.1");
+    addChild(ch2, sec21);
+
+    cout << "Book Structure:\n";
+    printTree(book);
+
+    return 0;
+}
