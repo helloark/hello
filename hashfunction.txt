@@ -1,0 +1,91 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+const int SIZE = 10;
+
+struct Entry {
+    string key;
+    string value;
+    bool isDeleted;
+};
+
+Entry table[SIZE];
+bool isOccupied[SIZE] = {false};
+
+// Simple hash function
+int hashFunc(string key) {
+    int sum = 0;
+    for (char c : key) sum += c;
+    return sum % SIZE;
+}
+
+// Insert key-value pair
+void insert(string key, string value) {
+    int index = hashFunc(key);
+    int start = index;
+
+    while (isOccupied[index] && !table[index].isDeleted && table[index].key != key) {
+        index = (index + 1) % SIZE;
+        if (index == start) {
+            cout << "Table Full!" << endl;
+            return;
+        }
+    }
+
+    table[index].key = key;
+    table[index].value = value;
+    table[index].isDeleted = false;
+    isOccupied[index] = true;
+
+    cout << "Inserted: (" << key << ", " << value << ")\n";
+}
+
+// Find value by key
+void find(string key) {
+    int index = hashFunc(key);
+    int start = index;
+
+    while (isOccupied[index]) {
+        if (!table[index].isDeleted && table[index].key == key) {
+            cout << "Found: " << table[index].value << endl;
+            return;
+        }
+        index = (index + 1) % SIZE;
+        if (index == start) break;
+    }
+
+    cout << "Key not found: " << key << endl;
+}
+
+// Delete key
+void remove(string key) {
+    int index = hashFunc(key);
+    int start = index;
+
+    while (isOccupied[index]) {
+        if (!table[index].isDeleted && table[index].key == key) {
+            table[index].isDeleted = true;
+            cout << "Deleted key: " << key << endl;
+            return;
+        }
+        index = (index + 1) % SIZE;
+        if (index == start) break;
+    }
+
+    cout << "Key not found for deletion: " << key << endl;
+}
+
+int main() {
+    insert("apple", "fruit");
+    insert("car", "vehicle");
+    insert("rose", "flower");
+
+    find("car");
+    remove("car");
+    find("car");
+    insert("car", "automobile");
+    find("car");
+
+    return 0;
+}

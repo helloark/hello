@@ -1,0 +1,32 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    string book;
+    cout << "Enter Book Name: ";
+    getline(cin, book);
+
+    string chapters[2], sections[2], subsections[2];
+
+    // Taking input for 2 chapters
+    for (int i = 0; i < 2; i++) {
+        cout << "Enter Chapter " << i+1 << " Name: ";
+        getline(cin, chapters[i]);
+
+        cout << "  Enter Section for " << chapters[i] << ": ";
+        getline(cin, sections[i]);
+
+        cout << "    Enter Subsection for " << sections[i] << ": ";
+        getline(cin, subsections[i]);
+    }
+
+    // Printing the tree structure
+    cout << "\nBook: " << book << endl;
+    for (int i = 0; i < 2; i++) {
+        cout << "  Chapter: " << chapters[i] << endl;
+        cout << "    Section: " << sections[i] << endl;
+        cout << "      Subsection: " << subsections[i] << endl;
+    }
+
+    return 0;
+}

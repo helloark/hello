@@ -1,0 +1,169 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node {
+    string keyword;
+    string meaning;
+    Node* left;
+    Node* right;
+};
+
+class Dictionary {
+    Node* root;
+
+    Node* insert(Node* root, string key, string meaning) {
+        if (root == NULL) {
+            root = new Node{key, meaning, NULL, NULL};
+        } else if (key < root->keyword) {
+            root->left = insert(root->left, key, meaning);
+        } else if (key > root->keyword) {
+            root->right = insert(root->right, key, meaning);
+        }
+        return root;
+    }
+
+    Node* findMin(Node* root) {
+        while (root->left != NULL)
+            root = root->left;
+        return root;
+    }
+
+    Node* deleteNode(Node* root, string key) {
+        if (root == NULL) return NULL;
+
+        if (key < root->keyword)
+            root->left = deleteNode(root->left, key);
+        else if (key > root->keyword)
+            root->right = deleteNode(root->right, key);
+        else {
+            // Node found
+            if (root->left == NULL) {
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            } else if (root->right == NULL) {
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            } else {
+                Node* temp = findMin(root->right);
+                root->keyword = temp->keyword;
+                root->meaning = temp->meaning;
+                root->right = deleteNode(root->right, temp->keyword);
+            }
+        }
+        return root;
+    }
+
+    void inorder(Node* root) {
+        if (root != NULL) {
+            inorder(root->left);
+            cout << root->keyword << " : " << root->meaning << endl;
+            inorder(root->right);
+        }
+    }
+
+    void reverseInorder(Node* root) {
+        if (root != NULL) {
+            reverseInorder(root->right);
+            cout << root->keyword << " : " << root->meaning << endl;
+            reverseInorder(root->left);
+        }
+    }
+
+    int maxComparisons(Node* root) {
+        if (root == NULL) return 0;
+        int l = maxComparisons(root->left);
+        int r = maxComparisons(root->right);
+        return 1 + max(l, r);
+    }
+
+    void update(Node* root, string key) {
+        if (root == NULL) {
+            cout << "Keyword not found.\n";
+            return;
+        }
+        if (key < root->keyword)
+            update(root->left, key);
+        else if (key > root->keyword)
+            update(root->right, key);
+        else {
+            cout << "Enter new meaning: ";
+            cin.ignore();
+            getline(cin, root->meaning);
+            cout << "Meaning updated.\n";
+        }
+    }
+
+public:
+    Dictionary() {
+        root = NULL;
+    }
+
+    void add() {
+        string key, meaning;
+        cout << "Enter keyword: ";
+        cin >> key;
+        cout << "Enter meaning: ";
+        cin.ignore();
+        getline(cin, meaning);
+        root = insert(root, key, meaning);
+        cout << "Keyword added.\n";
+    }
+
+    void remove() {
+        string key;
+        cout << "Enter keyword to delete: ";
+        cin >> key;
+        root = deleteNode(root, key);
+        cout << "Deleted if existed.\n";
+    }
+
+    void updateMeaning() {
+        string key;
+        cout << "Enter keyword to update: ";
+        cin >> key;
+        update(root, key);
+    }
+
+    void displayAscending() {
+        cout << "--- Dictionary in Ascending Order ---\n";
+        inorder(root);
+    }
+
+    void displayDescending() {
+        cout << "--- Dictionary in Descending Order ---\n";
+        reverseInorder(root);
+    }
+
+    void showMaxComparisons() {
+        int cmp = maxComparisons(root);
+        cout << "Maximum comparisons needed to find any keyword: " << cmp << endl;
+    }
+};
+
+int main() {
+    Dictionary dict;
+    int choice;
+
+    do {
+        cout << "\n--- Dictionary Menu ---\n";
+        cout << "1. Add\n2. Delete\n3. Update\n4. Display Ascending\n5. Display Descending\n6. Max Comparisons\n7. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: dict.add(); break;
+            case 2: dict.remove(); break;
+            case 3: dict.updateMeaning(); break;
+            case 4: dict.displayAscending(); break;
+            case 5: dict.displayDescending(); break;
+            case 6: dict.showMaxComparisons(); break;
+            case 7: cout << "Goodbye!\n"; break;
+            default: cout << "Invalid choice.\n";
+        }
+    } while (choice != 7);
+
+    return 0;
+}

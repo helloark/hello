@@ -1,0 +1,67 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+const int SIZE = 10;
+
+struct Client {
+    string name;
+    string phone;
+};
+
+Client hashTable[SIZE];  // hash table
+bool isOccupied[SIZE] = {false};  // track filled slots
+
+// Simple hash function: sum of ASCII values mod SIZE
+int hashFunc(string key) {
+    int sum = 0;
+    for (char ch : key) {
+        sum += ch;
+    }
+    return sum % SIZE;
+}
+
+// Insert client into hash table
+void insertClient(string name, string phone) {
+    int index = hashFunc(name);
+
+    // Linear probing in case of collision
+    while (isOccupied[index]) {
+        index = (index + 1) % SIZE;
+    }
+
+    hashTable[index].name = name;
+    hashTable[index].phone = phone;
+    isOccupied[index] = true;
+
+    cout << "Inserted: " << name << " -> " << phone << endl;
+}
+
+// Search client by name
+void searchClient(string name) {
+    int index = hashFunc(name);
+    int start = index;
+
+    while (isOccupied[index]) {
+        if (hashTable[index].name == name) {
+            cout << "Found: " << name << " -> " << hashTable[index].phone << endl;
+            return;
+        }
+        index = (index + 1) % SIZE;
+        if (index == start) break; // Avoid infinite loop
+    }
+
+    cout << "Client not found: " << name << endl;
+}
+
+int main() {
+    insertClient("Ajay", "9876543210");
+    insertClient("Sneha", "9123456780");
+    insertClient("Rahul", "9012345678");
+
+    cout << "\nSearching...\n";
+    searchClient("Sneha");
+    searchClient("Tanmay");
+
+    return 0;
+}

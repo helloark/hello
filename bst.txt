@@ -1,0 +1,105 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+};
+
+
+Node* createNode(int value) {
+    Node* newNode = new Node();
+    newNode->data = value;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+
+Node* insert(Node* root, int value) {
+    if (root == NULL)
+        return createNode(value);
+    if (value < root->data)
+        root->left = insert(root->left, value);
+    else
+        root->right = insert(root->right, value);
+    return root;
+}
+
+
+int longestPath(Node* root) {
+    if (root == NULL)
+        return 0;
+    int left = longestPath(root->left);
+    int right = longestPath(root->right);
+    return max(left, right) + 1;
+}
+
+
+int findMin(Node* root) {
+    if (root == NULL) return -1;
+    while (root->left != NULL)
+        root = root->left;
+    return root->data;
+}
+
+
+void mirror(Node* root) {
+    if (root == NULL) return;
+    mirror(root->left);
+    mirror(root->right);
+    swap(root->left, root->right);
+}
+
+
+bool search(Node* root, int key) {
+    if (root == NULL) return false;
+    if (root->data == key) return true;
+    if (key < root->data)
+        return search(root->left, key);
+    else
+        return search(root->right, key);
+}
+
+
+void inorder(Node* root) {
+    if (root == NULL) return;
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
+int main() {
+    Node* root = NULL;
+    int values[] = {50, 30, 70, 20, 40, 60, 80};
+
+    
+    for (int val : values)
+        root = insert(root, val);
+
+    cout << "Inorder Traversal: ";
+    inorder(root);
+    cout << endl;
+
+    
+    root = insert(root, 25);
+    cout << "After inserting 25, Inorder: ";
+    inorder(root);
+    cout << endl;
+
+    
+    cout << "Longest path (height): " << longestPath(root) << endl;
+
+    
+    cout << "Minimum value: " << findMin(root) << endl;
+
+    mirror(root);
+    cout << "After mirroring, Inorder: ";
+    inorder(root);
+    cout << endl;
+
+    int key = 40;
+    cout << "Searching for " << key << ": " << (search(root, key) ? "Found" : "Not Found") << endl;
+
+    return 0;
+}
